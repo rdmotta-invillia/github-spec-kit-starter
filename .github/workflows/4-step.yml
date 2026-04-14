@@ -1,0 +1,84 @@
+name: Step 4
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - ".github/steps/4-step.md"
+      - ".specific/memory/plan.md"
+      - "plan.md"
+
+permissions:
+  contents: read
+  actions: write
+
+env:
+  STEP_5_FILE: ".github/steps/5-step.md"
+
+jobs:
+  validate_step_4:
+    name: Validate Step 4 Completion
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Check plan.md and related files
+        id: check-plan
+        run: |
+          # Verificar se o arquivo plan.md foi gerado
+          plan_found=false
+          if [ -f "plan.md" ]; then
+            plan_found=true
+            plan_file="plan.md"
+          elif [ -f ".specific/memory/plan.md" ]; then
+            plan_found=true
+            plan_file=".specific/memory/plan.md"
+          fi
+          
+          if [ "$plan_found" = true ]; then
+            echo "✅ Arquivo plan.md encontrado"
+            
+            if [ -s "$plan_file" ]; then
+              echo "✅ plan.md possui conteudo"
+            else
+              echo "⚠️ plan.md parece estar vazio"
+            fi
+          else
+            echo "❌ Arquivo plan.md nao encontrado"
+          fi
+          
+          # Verificar se os arquivos auxiliares foram criados
+          auxiliary_files=("research.md" "quickstart.md" "data-model.md")
+          for file in "${auxiliary_files[@]}"; do
+            if [ -f "$file" ] || [ -f ".specific/$file" ]; then
+              echo "✅ $file encontrado"
+            else
+              echo "⚠️ $file nao encontrado (opcional)"
+            fi
+          done
+          
+          echo "plan_generated=true" >> "$GITHUB_OUTPUT"
+
+  post_step_completion:
+    name: Post Step 4 Completion
+    runs-on: ubuntu-latest
+    needs: [validate_step_4]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Post completion message
+        run: |
+          echo "✅ Etapa 4 - Geracao do plan.md concluida!"
+          echo ""
+          echo "Proximo: va para a Etapa 5 para gerar o arquivo tasks.md"
+
+      - name: Disable current workflow and enable next one
+        run: |
+          gh workflow disable "${{github.workflow}}"
+          gh workflow enable "Step 5" 2>/dev/null || echo "Workflow da Etapa 5 ainda nao foi criado"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

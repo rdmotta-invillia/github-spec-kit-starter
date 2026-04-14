@@ -1,0 +1,74 @@
+name: Step 3
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - ".github/steps/3-step.md"
+      - "StakeholderDocuments/**"
+      - ".specific/memory/spec.md"
+
+permissions:
+  contents: read
+  actions: write
+
+env:
+  STEP_4_FILE: ".github/steps/4-step.md"
+
+jobs:
+  validate_step_3:
+    name: Validate Step 3 Completion
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Check spec.md file
+        id: check-spec
+        run: |
+          # Verificar se o arquivo spec.md foi gerado
+          if [ -f ".specific/memory/spec.md" ] || [ -f "spec.md" ]; then
+            echo "✅ Arquivo spec.md encontrado"
+            
+            # Verificar qual arquivo existe e validar conteúdo
+            spec_file=""
+            if [ -f "spec.md" ]; then
+              spec_file="spec.md"
+            elif [ -f ".specific/memory/spec.md" ]; then
+              spec_file=".specific/memory/spec.md"
+            fi
+            
+            if [ -s "$spec_file" ]; then
+              echo "✅ spec.md possui conteudo"
+              echo "spec_generated=true" >> "$GITHUB_OUTPUT"
+            else
+              echo "⚠️ spec.md parece estar vazio"
+              echo "spec_generated=false" >> "$GITHUB_OUTPUT"
+            fi
+          else
+            echo "❌ Arquivo spec.md nao encontrado nos locais esperados"
+            echo "spec_generated=false" >> "$GITHUB_OUTPUT"
+          fi
+
+  post_step_completion:
+    name: Post Step 3 Completion
+    runs-on: ubuntu-latest
+    needs: [validate_step_3]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Post completion message
+        run: |
+          echo "✅ Etapa 3 - Geracao do spec.md concluida!"
+          echo ""
+          echo "Próximo: Gerando um plano usando a documentação do arquivo spec.md e usando a documentação do stakeholder"
+
+      - name: Disable current workflow and enable next one
+        run: |
+          gh workflow disable "${{github.workflow}}"
+          gh workflow enable "Step 4" 2>/dev/null || echo "Workflow da Etapa 4 ainda nao foi criado"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

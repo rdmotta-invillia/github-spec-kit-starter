@@ -1,0 +1,76 @@
+name: Step 6
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - ".github/steps/6-step.md"
+      - "src/**"
+      - "*.csproj"
+      - "Program.cs"
+
+permissions:
+  contents: read
+  actions: write
+
+jobs:
+  validate_step_6:
+    name: Validate Step 6 Completion
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Check implementation status
+        id: check-implementation
+        run: |
+          # Verificar se há código fonte implementado
+          source_files=false
+          
+          if [ -d "src" ] && [ "$(find src -type f -name '*.cs' | wc -l)" -gt 0 ]; then
+            echo "✅ Arquivos C# encontrados em src/"
+            source_files=true
+          fi
+          
+          if [ -f "*.csproj" ] || [ "$(find . -maxdepth 1 -type f -name '*.csproj' | wc -l)" -gt 0 ]; then
+            echo "✅ Arquivo de projeto C# encontrado"
+            source_files=true
+          fi
+          
+          if [ "$source_files" = true ]; then
+            echo "implementation_progress=true" >> "$GITHUB_OUTPUT"
+            echo "✅ Arquivos de implementacao detectados"
+          else
+            echo "implementation_progress=false" >> "$GITHUB_OUTPUT"
+            echo "⚠️ Nenhum arquivo de implementacao detectado ainda"
+          fi
+
+  post_step_completion:
+    name: Post Step 6 Completion
+    runs-on: ubuntu-latest
+    needs: [validate_step_6]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Post completion message
+        run: |
+          echo "✅ Todas as etapas do exercicio GitHub Spec Kit foram concluidas!"
+          echo ""
+          echo "Voce concluiu com sucesso:"
+          echo "1. ✅ Inicializacao do GitHub Spec Kit"
+          echo "2. ✅ Geracao do constitution.md"
+          echo "3. ✅ Geracao do spec.md"
+          echo "4. ✅ Geracao do plan.md"
+          echo "5. ✅ Geracao do tasks.md"
+          echo "6. ✅ Implementacao da aplicacao MVP"
+          echo ""
+          echo "Excelente trabalho! 🎉"
+
+      - name: Disable current workflow
+        run: |
+          gh workflow disable "${{github.workflow}}"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

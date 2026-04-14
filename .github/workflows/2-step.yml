@@ -2,101 +2,97 @@ name: Step 2
 
 on:
   workflow_dispatch:
-  # Common event triggers: pull_request, push, issues, issue_comment (feel free to experiment)
-  # Docs: https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows
-  # Example:
-  # pull_request:
-  #   branches:
-  #     - main
-  #   types:
-  #     - closed
+  push:
+    paths:
+      - ".github/steps/2-step.md"
+      - "StakeholderDocuments/**"
+      - ".specify/memory/constitution.md"
 
 permissions:
-  contents: write
+  contents: read
   actions: write
-  issues: write
 
 env:
   STEP_3_FILE: ".github/steps/3-step.md"
 
 jobs:
-  find_exercise:
-    name: Find Exercise Issue
-    uses: skills/exercise-toolkit/.github/workflows/find-exercise-issue.yml@v0.9.1
-
-  # This job is optional. We often call it a "grading job". If the step is not graded, remove it.
-  check_step_work:
-    name: Check step work
+  validate_step_2:
+    name: Validate Step 2 Completion
     runs-on: ubuntu-latest
-    needs: [find_exercise]
-    env:
-      ISSUE_REPOSITORY: ${{ github.repository }}
-      ISSUE_NUMBER: ${{ needs.find_exercise.outputs.issue-number }}
 
     steps:
       - name: Checkout
         uses: actions/checkout@v6
 
-      - name: Get response templates
+      - name: Check StakeholderDocuments folder
+        id: check-stakeholder-docs
+        run: |
+          # Verificar se a pasta StakeholderDocuments existe
+          if [ -d "StakeholderDocuments" ]; then
+            echo "✅ Pasta StakeholderDocuments encontrada"
+            
+            # Verificar se os arquivos necessários existem
+            required_files=("ProjectGoals.md" "AppFeatures.md" "TechStack.md")
+            all_found=true
+            
+            for file in "${required_files[@]}"; do
+              if [ -f "StakeholderDocuments/$file" ]; then
+                echo "✅ StakeholderDocuments/$file encontrado"
+              else
+                echo "❌ StakeholderDocuments/$file NAO encontrado"
+                all_found=false
+              fi
+            done
+            
+            if [ "$all_found" = true ]; then
+              echo "stakeholder_docs_ready=true" >> "$GITHUB_OUTPUT"
+            fi
+          else
+            echo "❌ Pasta StakeholderDocuments nao encontrada"
+            echo "stakeholder_docs_ready=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Check constitution.md file
+        id: check-constitution
+        run: |
+          # Verificar se o arquivo constitution.md foi gerado
+          if [ -f ".specify/memory/constitution.md" ]; then
+            echo "✅ Arquivo constitution.md encontrado"
+            
+            # Verificar se o arquivo não está vazio
+            if [ -s ".specify/memory/constitution.md" ]; then
+              echo "✅ constitution.md possui conteudo"
+              echo "constitution_generated=true" >> "$GITHUB_OUTPUT"
+            else
+              echo "⚠️ constitution.md parece estar vazio"
+              echo "constitution_generated=false" >> "$GITHUB_OUTPUT"
+            fi
+          else
+            echo "❌ Arquivo constitution.md nao encontrado"
+            echo "constitution_generated=false" >> "$GITHUB_OUTPUT"
+          fi
+
+  post_step_completion:
+    name: Post Step 2 Completion
+    runs-on: ubuntu-latest
+    needs: [validate_step_2]
+
+    steps:
+      - name: Checkout
         uses: actions/checkout@v6
-        with:
-          repository: skills/exercise-toolkit
-          path: exercise-toolkit
-          ref: v0.9.1
 
-      - name: Find last comment
-        id: find-last-comment
-        uses: peter-evans/find-comment@v4
-        with:
-          repository: ${{ env.ISSUE_REPOSITORY }}
-          issue-number: ${{ env.ISSUE_NUMBER }}
-          direction: last
+      - name: Post completion message
+        run: |
+          echo "✅ Etapa 2 - Geracao do constitution.md concluida!"
+          echo ""
+          echo "Próximo: Gerar o arquivo spec.md usando a documentação do stakeholder"
 
-      - name: Update comment - checking work
-        uses: GrantBirki/comment@v2.1.1
-        with:
-          repository: ${{ env.ISSUE_REPOSITORY }}
-          issue-number: ${{ env.ISSUE_NUMBER }}
-          comment-id: ${{ steps.find-last-comment.outputs.comment-id }}
-          file: exercise-toolkit/markdown-templates/step-feedback/checking-work.md
-          edit-mode: replace
-
-      # START: Check practical exercise
-
-      # replace-me: Example of a grading check. You can add more checks as needed.
-      - name: Check if README file exists
-        id: check-file-exists
-        continue-on-error: true
-        uses: skills/exercise-toolkit/actions/file-exists@v0.9.1
-        with:
-          file: README.md
-
-      # replace-me: Example of a grading check. You can add more checks as needed.
-      - name: Check for keyphrase in README.md
-        id: check-for-keyphrase
-        continue-on-error: true
-        uses: skills/action-keyphrase-checker@v1
-        with:
-          text-file: README.md
-          keyphrase: Installation guide
-
-      - name: Update comment - step results
-        uses: GrantBirki/comment@v2.1.1
-        with:
-          repository: ${{ env.ISSUE_REPOSITORY }}
-          issue-number: ${{ env.ISSUE_NUMBER }}
-          comment-id: ${{ steps.find-last-comment.outputs.comment-id }}
-          edit-mode: replace
-          file: exercise-toolkit/markdown-templates/step-feedback/step-results-table.md
-          vars: |
-            step_number: 2
-            results_table:
-              - description: "Checked if README.md file exists"
-                passed: ${{ steps.check-file-exists.outcome == 'success' }}
-              - description: "Checked for Installation guide in README.md"
-                passed: ${{ steps.check-for-keyphrase.outcome == 'success' }}
-
-      # Add more checks as needed
+      - name: Disable current workflow and enable next one
+        run: |
+          gh workflow disable "${{github.workflow}}"
+          gh workflow enable "Step 3"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       # END: Check practical exercise
 

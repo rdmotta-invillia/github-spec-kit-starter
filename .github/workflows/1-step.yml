@@ -2,67 +2,82 @@ name: Step 1
 
 on:
   workflow_dispatch:
+  push:
+    paths:
+      - ".github/steps/1-step.md"
   # Common event triggers: pull_request, push, issues, issue_comment (feel free to experiment)
   # Docs: https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows
-  # Example:
-  # pull_request:
-  #   branches:
-  #     - main
 
 permissions:
   contents: read
   actions: write
-  issues: write
 
 env:
   STEP_2_FILE: ".github/steps/2-step.md"
+  SPECIFY_INIT_SUCCESS: "false"
 
 jobs:
-  find_exercise:
-    name: Find Exercise Issue
-    uses: skills/exercise-toolkit/.github/workflows/find-exercise-issue.yml@v0.9.1
-
-  post_next_step_content:
-    name: Post next step content
-    needs: [find_exercise]
+  validate_step_1:
+    name: Validate Step 1 Completion
     runs-on: ubuntu-latest
-    env:
-      ISSUE_REPOSITORY: ${{ github.repository }}
-      ISSUE_NUMBER: ${{ needs.find_exercise.outputs.issue-number }}
 
     steps:
       - name: Checkout
         uses: actions/checkout@v6
 
-      - name: Get response templates
+      - name: Check GitHub Spec Kit initialization
+        id: check-speckit
+        run: |
+          # Verificar se a pasta .github/agents existe
+          if [ -d ".github/agents" ]; then
+            echo "✅ pasta .github/agents encontrada"
+            agents_found=true
+          else
+            echo "❌ pasta .github/agents não encontrada"
+            agents_found=false
+          fi
+          
+          # Verificar se a pasta .specific existe
+          if [ -d ".specific" ]; then
+            echo "✅ pasta .specific encontrada"
+            specific_found=true
+          else
+            echo "❌ pasta .specific não encontrada"
+            specific_found=false
+          fi
+          
+          # Verificar se há arquivos de agentes
+          if [ -f ".github/agents"/*.md ]; then
+            echo "✅ arquivos de agentes encontrados"
+            agent_files_found=true
+          else
+            echo "❌ nenhum arquivo de agente encontrado"
+            agent_files_found=false
+          fi
+          
+          # Define o resultado
+          if [ "$agents_found" = true ] && [ "$specific_found" = true ]; then
+            echo "speckit_initialized=true" >> "$GITHUB_OUTPUT"
+            echo "✅ O GitHub Spec Kit parece estar inicializado"
+          else
+            echo "speckit_initialized=false" >> "$GITHUB_OUTPUT"
+            echo "⚠️ O GitHub Spec Kit pode nao estar totalmente inicializado"
+          fi
+
+  post_step_completion:
+    name: Post Step 1 Completion
+    runs-on: ubuntu-latest
+    needs: [validate_step_1]
+
+    steps:
+      - name: Checkout
         uses: actions/checkout@v6
-        with:
-          repository: skills/exercise-toolkit
-          path: exercise-toolkit
-          ref: v0.9.1
 
-      - name: Create comment - step finished
-        uses: GrantBirki/comment@v2.1.1
-        with:
-          repository: ${{ env.ISSUE_REPOSITORY }}
-          issue-number: ${{ env.ISSUE_NUMBER }}
-          file: exercise-toolkit/markdown-templates/step-feedback/step-finished-prepare-next-step.md
-          vars: |
-            next_step_number: 2
-
-      - name: Create comment - add step content
-        uses: GrantBirki/comment@v2.1.1
-        with:
-          repository: ${{ env.ISSUE_REPOSITORY }}
-          issue-number: ${{ env.ISSUE_NUMBER }}
-          file: ${{ env.STEP_2_FILE }}
-
-      - name: Create comment - watching for progress
-        uses: GrantBirki/comment@v2.1.1
-        with:
-          repository: ${{ env.ISSUE_REPOSITORY }}
-          issue-number: ${{ env.ISSUE_NUMBER }}
-          file: exercise-toolkit/markdown-templates/step-feedback/watching-for-progress.md
+      - name: Post completion message
+        run: |
+          echo "✅ Etapa 1 - Inicializacao do GitHub Spec Kit concluida!"
+          echo ""
+          echo "Próximo: Etapa 2 - Gerar a `constitution.md` para o stakeholder"
 
       - name: Disable current workflow and enable next one
         run: |

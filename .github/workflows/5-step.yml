@@ -1,0 +1,79 @@
+name: Step 5
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - ".github/steps/5-step.md"
+      - ".specific/memory/tasks.md"
+      - "tasks.md"
+
+permissions:
+  contents: read
+  actions: write
+
+env:
+  STEP_6_FILE: ".github/steps/6-step.md"
+
+jobs:
+  validate_step_5:
+    name: Validate Step 5 Completion
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Check tasks.md file
+        id: check-tasks
+        run: |
+          # Verificar se o arquivo tasks.md foi gerado
+          tasks_found=false
+          if [ -f "tasks.md" ]; then
+            tasks_found=true
+            tasks_file="tasks.md"
+          elif [ -f ".specific/memory/tasks.md" ]; then
+            tasks_found=true
+            tasks_file=".specific/memory/tasks.md"
+          fi
+          
+          if [ "$tasks_found" = true ]; then
+            echo "✅ Arquivo tasks.md encontrado"
+            
+            if [ -s "$tasks_file" ]; then
+              echo "✅ tasks.md possui conteudo"
+              # Verificar se contém tarefas definidas
+              if grep -q "^## Task\|^### T[0-9]\|^- \[" "$tasks_file"; then
+                echo "✅ tasks.md parece conter definicoes de tarefas"
+              fi
+              echo "tasks_generated=true" >> "$GITHUB_OUTPUT"
+            else
+              echo "⚠️ tasks.md parece estar vazio"
+              echo "tasks_generated=false" >> "$GITHUB_OUTPUT"
+            fi
+          else
+            echo "❌ Arquivo tasks.md nao encontrado"
+            echo "tasks_generated=false" >> "$GITHUB_OUTPUT"
+          fi
+
+  post_step_completion:
+    name: Post Step 5 Completion
+    runs-on: ubuntu-latest
+    needs: [validate_step_5]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Post completion message
+        run: |
+          echo "✅ Etapa 5 - Geracao do tasks.md concluida!"
+          echo ""
+          echo "Proximo: va para a Etapa 6 para implementar o MVP"
+
+      - name: Disable current workflow and enable next one
+        run: |
+          gh workflow disable "${{github.workflow}}"
+          gh workflow enable "Step 6" 2>/dev/null || echo "Workflow da Etapa 6 ainda nao foi criado"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
