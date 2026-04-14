@@ -35,3 +35,80 @@
 .Trashes
 ehthumbs.db
 Thumbs.db
+
+# .NET #
+########
+bin/
+obj/
+*.csproj.user
+*.sln.iml
+*.suo
+.vs/
+.vscode/
+launchSettings.json
+appsettings.*.json
+!appsettings.json
+.dotnet/
+
+# Dev Container #
+#################
+.devcontainer/.env
+.devcontainer/.env.local
+
+# Environment files #
+#####################
+.env
+.env.local
+.env.*.local
+
+# Node modules #
+################
+node_modules/
+package-lock.json
+yarn.lock
+npm-debug.log*
+
+# Python #
+##########
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+pip-log.txt
+pip-delete-this-directory.txt
+
+# IDEs #
+########
+.idea/
+*.swp
+*.swo
+*~
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+!.vscode/launch.json
+!.vscode/tasks.json
+
+# Specify/GitHub Spec Kit #
+###########################
+.specify/memory/constitution.md
+.specify/scripts/

@@ -1,0 +1,147 @@
+{
+  "name": "GitHub Spec Kit - Leitor RSS",
+  "description": "Dev container para desenvolvimento de uma aplicação de Leitor RSS usando GitHub Spec Kit com ASP.NET Core e Blazor",
+  
+  // Dockerfile localizado na pasta .devcontainer
+  "build": {
+    "dockerfile": "Dockerfile",
+    "context": ".."
+  },
+
+  // Configurações de inicialização
+  "remoteUser": "vscode",
+  "workspaceFolder": "/workspace",
+  "workspaceMount": "source=${localWorkspaceFolder},target=/workspace,type=bind",
+
+  // Portas para expor (backend API + frontend Blazor)
+  "forwardPorts": [5000, 5001, 7000, 7001],
+  "portsAttributes": {
+    "5000": {
+      "label": "Backend API (HTTP)",
+      "onAutoForward": "notify"
+    },
+    "5001": {
+      "label": "Backend API (HTTPS)",
+      "onAutoForward": "notify"
+    },
+    "7000": {
+      "label": "Frontend (HTTP)",
+      "onAutoForward": "notify"
+    },
+    "7001": {
+      "label": "Frontend (HTTPS)",
+      "onAutoForward": "notify"
+    }
+  },
+
+  // Extensões do VS Code para instalar automaticamente
+  "extensions": [
+    // C# e .NET
+    "ms-dotnettools.csharp",
+    "ms-dotnettools.vscode-dotnet-runtime",
+    "ms-dotnettools.blazorwasm-companion",
+    
+    // GitHub Copilot
+    "github.copilot",
+    "github.copilot-chat",
+    
+    // Git e GitHub
+    "eamodio.gitlens",
+    "github.vscode-pull-request-github",
+    
+    // Desenvolvimento
+    "ms-vscode.makefile-tools",
+    "ms-vscode.powershell",
+    "humao.rest-client",
+    
+    // Frontend/Web
+    "esbenp.prettier-vscode",
+    "dbaeumer.vscode-eslint",
+    
+    // Markdown
+    "yzhang.markdown-all-in-one",
+    "DavidAnson.vscode-markdownlint",
+    
+    // Docker
+    "ms-azuretools.vscode-docker",
+    
+    // Themes e UI
+    "github.github-vscode-theme",
+    "ms-vscode.theme-materialkind"
+  ],
+
+  // Variáveis de ambiente
+  "remoteEnv": {
+    "DOTNET_USE_POLLING_FILE_WATCHER": "true",
+    "PATH": "${containerEnv:PATH}:/home/vscode/.local/bin"
+  },
+
+  // Configurações do VS Code aplicadas no container
+  "customizations": {
+    "vscode": {
+      "settings": {
+        // Editor
+        "editor.formatOnSave": true,
+        "editor.defaultFormatter": "esbenp.prettier-vscode",
+        "editor.rulers": [80, 120],
+        
+        // .NET e C#
+        "dotnet.defaultSolutionOrFolder": ".",
+        "omnisharp.enableRoslynAnalyzers": true,
+        "omnisharp.organize Imports On Format": true,
+        
+        // Markdown
+        "markdown.preview.breaks": true,
+        
+        // Git
+        "git.ignoreLimitWarning": true,
+        "gitlens.advanced.messages": {
+          "suppressGitMissingWarning": false
+        },
+        
+        // Files
+        "files.watcherExclude": {
+          "**/.git/objects/**": true,
+          "**/.git/subtree-cache/**": true,
+          "**/node_modules/*/**": true,
+          "**/bin/**": true,
+          "**/obj/**": true,
+          "**/.vscode/**": true
+        },
+        
+        // Search
+        "search.exclude": {
+          "**/node_modules": true,
+          "**/bin": true,
+          "**/obj": true,
+          ".git": true
+        }
+      },
+      "extensions": [
+        "ms-dotnettools.csharp",
+        "github.copilot",
+        "eamodio.gitlens"
+      ]
+    }
+  },
+
+  // Montar o Docker socket para executar containers
+  "mounts": [
+    "source=/var/run/docker.sock,target=/var/run/docker.sock,type=bind"
+  ],
+
+  // Scripts executados após a criação do container
+  "postCreateCommand": "bash .devcontainer/post-create.sh",
+
+  // Timeout para construção do container (em segundos)
+  "buildArgs": {
+    "VARIANT": "8.0-ubuntu-22.04"
+  },
+
+  // Mensagem de boas-vindas
+  "postStartCommand": "clear && cat .devcontainer/WELCOME.txt || echo '✅ Dev container iniciado com sucesso!'",
+
+  // Configurações de segurança
+  "capAdd": ["SYS_PTRACE"],
+  "securityOpt": ["seccomp=unconfined"]
+}
