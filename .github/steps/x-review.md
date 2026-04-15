@@ -1,16 +1,22 @@
-## Review
+## Revisão
 
-_Congratulations, you've completed this exercise and learned a lot about (replace-me: feature/product that was taught in this exercise)
+_Parabéns, você concluiu este exercício e aprendeu bastante sobre GitHub Spec Kit!_
 
 <img src="https://octodex.github.com/images/jetpacktocat.png" alt="celebrate" width=200 align=right>
 
-Here's a recap of your accomplishments:
+Voce concluiu com sucesso:
 
-- (replace-me: Accomplishment #1)
-- (replace-me: Accomplishment #N)
+- Inicializacao do GitHub Spec Kit
+- Geracao do constitution.md
+- Geracao do spec.md
+- Geracao do plan.md
+- Geracao do tasks.md
+- Implementacao da aplicacao MVP
 
-### What's next?
+### O que vem a seguir?
 
-- (replace-me: Natural follow up Skills exercise - if there is one)
-- (replace-me: Documentation link to learn more about the feature)
-- (replace-me: Other resources or calls to action)
+- Desenvolva suas habilidades de desenvolvimento orientado por especificações (SDD) criando uma aplicação funcional usando o GitHub Spec Kit e o Copilot CLI.
+- [Ganhe Skills](https://learn.microsoft.com/pt-br/training/paths/create-embed-custom-code-agents) praticando o treinamento oficial
+- [More GitHub Skills](https://learn.github.com/skills) - Continue aprendendo com outros exercícios
+- Experimente usar o Copilot CLI nos seus próprios projetos para aumentar a produtividade!
+

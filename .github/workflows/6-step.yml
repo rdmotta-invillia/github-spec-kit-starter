@@ -3,6 +3,8 @@ name: Step 6
 on:
   workflow_dispatch:
   push:
+    branches:
+      - main
     paths:
       - ".github/steps/6-step.md"
       - "src/**"
@@ -13,6 +15,9 @@ permissions:
   contents: write
   actions: write
   issues: write
+
+env:
+  REVIEW_FILE: ".github/steps/x-review.md"
 
 jobs:
   find_exercise:
@@ -26,10 +31,10 @@ jobs:
     needs: [find_exercise]
 
     steps:
-      - name: Checkout
+      - name: Checkout do código
         uses: actions/checkout@v6
 
-      - name: Check implementation status
+      - name: Verificar status da implementação
         id: check-implementation
         run: |
           # Verificar se há código fonte implementado
@@ -57,30 +62,37 @@ jobs:
     name: Post Step 6 Completion
     runs-on: ubuntu-latest
     needs: [find_exercise, validate_step]
+    env:
+      ISSUE_REPOSITORY: ${{ github.repository }}
+      ISSUE_NUMBER: ${{ needs.find_exercise.outputs.issue-number }}
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@v6
+      - name: Checkout do código
+        uses: actions/checkout@v5
 
-      - name: Post completion message
-        run: |
-          echo "✅ Todas as etapas do exercicio GitHub Spec Kit foram concluidas!"
-          echo ""
-          echo "Voce concluiu com sucesso:"
-          echo "1. ✅ Inicializacao do GitHub Spec Kit"
-          echo "2. ✅ Geracao do constitution.md"
-          echo "3. ✅ Geracao do spec.md"
-          echo "4. ✅ Geracao do plan.md"
-          echo "5. ✅ Geracao do tasks.md"
-          echo "6. ✅ Implementacao da aplicacao MVP"
-          echo ""
-          echo "Excelente trabalho! 🎉"
+      - name: Obter templates de resposta
+        uses: actions/checkout@v5
+        with:
+          repository: skills/exercise-toolkit
+          path: exercise-toolkit
+          ref: v0.8.1
 
-      - name: Disable current workflow
-        run: |
-          gh workflow disable "${{github.workflow}}"
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Encontrar último comentário
+        id: find-last-comment
+        uses: peter-evans/find-comment@v3
+        with:
+          repository: ${{ env.ISSUE_REPOSITORY }}
+          issue-number: ${{ env.ISSUE_NUMBER }}
+          direction: last
+
+      - name: Atualizar comentário - verificando trabalho
+        uses: GrantBirki/comment@v2.1.1
+        with:
+          repository: ${{ env.ISSUE_REPOSITORY }}
+          issue-number: ${{ env.ISSUE_NUMBER }}
+          comment-id: ${{ steps.find-last-comment.outputs.comment-id }}
+          file: exercise-toolkit/markdown-templates/step-feedback/checking-work.md
+          edit-mode: replace
 
   post_review_content:
     name: Publicar conteúdo da revisão
@@ -126,4 +138,4 @@ jobs:
     uses: skills/exercise-toolkit/.github/workflows/finish-exercise.yml@v0.8.1
     with:
       issue-url: ${{ needs.find_exercise.outputs.issue-url }}
-      exercise-title: "Crie aplicações com o Copilot CLI"
+      exercise-title: "GitHub Spec Kit desenvolvimento orientado por especificações."

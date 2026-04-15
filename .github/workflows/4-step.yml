@@ -3,6 +3,8 @@ name: Step 4
 on:
   workflow_dispatch:
   push:
+    branches:
+      - main
     paths:
       - ".github/steps/4-step.md"
       - ".specific/memory/plan.md"
@@ -14,7 +16,7 @@ permissions:
   issues: write
 
 env:
-  STEP_5_FILE: ".github/steps/5-step.md"
+  STEP_FILE: ".github/steps/5-step.md"
 
 jobs:
   find_exercise:
@@ -27,10 +29,10 @@ jobs:
     needs: [find_exercise]
 
     steps:
-      - name: Checkout
+      - name: Checkout do código
         uses: actions/checkout@v6
 
-      - name: Check plan.md and related files
+      - name: Verificar arquivo plan.md e arquivos relacionados
         id: check-plan
         run: |
           # Verificar se o arquivo plan.md foi gerado
@@ -76,31 +78,32 @@ jobs:
       ISSUE_REPOSITORY: ${{ github.repository }}
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - name: Checkout do código
+        uses: actions/checkout@v5
 
-      - name: Get response templates
-        uses: actions/checkout@v4
+      - name: Obter templates de resposta
+        uses: actions/checkout@v5
         with:
           repository: skills/exercise-toolkit
           path: exercise-toolkit
-          ref: v0.7.0
+          ref: v0.8.1
 
-      - name: Create comment - add step content
+      - name: Encontrar último comentário
+        id: find-last-comment
+        uses: peter-evans/find-comment@v3
+        with:
+          repository: ${{ env.ISSUE_REPOSITORY }}
+          issue-number: ${{ env.ISSUE_NUMBER }}
+          direction: last
+
+      - name: Atualizar comentário - verificando trabalho
         uses: GrantBirki/comment@v2.1.1
         with:
           repository: ${{ env.ISSUE_REPOSITORY }}
           issue-number: ${{ env.ISSUE_NUMBER }}
-          file: ${{ env.STEP_FILE }}
-          vars: |
-            full_repo_name: ${{ github.repository }}
-
-      - name: Create comment - watching for progress
-        uses: GrantBirki/comment@v2.1.1
-        with:
-          repository: ${{ env.ISSUE_REPOSITORY }}
-          issue-number: ${{ env.ISSUE_NUMBER }}
-          file: .github/translations/watching-for-progress.md
+          comment-id: ${{ steps.find-last-comment.outputs.comment-id }}
+          file: exercise-toolkit/markdown-templates/step-feedback/checking-work.md
+          edit-mode: replace
 
       - name: Habilitar workflow do próximo passo
         run: |

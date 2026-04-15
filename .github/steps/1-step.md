@@ -1,4 +1,4 @@
-## Step 1: Criar a pasta do projeto e inicializar o GitHub Spec Kit
+## Etapa 1: Criar a pasta do projeto e inicializar o GitHub Spec Kit
 
 O Specify CLI é usado para inicializar o GitHub Spec Kit em uma pasta de projeto. O GitHub Spec Kit usa a pasta do projeto para armazenar arquivos de configuração, modelos, scripts e agentes que suportam os fluxos de trabalho de desenvolvimento orientados por especificações.
 

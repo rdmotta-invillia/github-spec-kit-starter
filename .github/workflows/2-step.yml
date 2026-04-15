@@ -3,6 +3,8 @@ name: Step 2
 on:
   workflow_dispatch:
   push:
+    branches:
+      - main
     paths:
       - ".github/steps/2-step.md"
       - "StakeholderDocuments/**"
@@ -28,10 +30,10 @@ jobs:
     needs: [find_exercise]
 
     steps:
-      - name: Checkout
+      - name: Checkout do código
         uses: actions/checkout@v6
 
-      - name: Check StakeholderDocuments folder
+      - name: Verificar pasta StakeholderDocuments
         id: check-stakeholder-docs
         run: |
           # Verificar se a pasta StakeholderDocuments existe
@@ -59,7 +61,7 @@ jobs:
             echo "stakeholder_docs_ready=false" >> "$GITHUB_OUTPUT"
           fi
 
-      - name: Check constitution.md file
+      - name: Verificar arquivo constitution.md
         id: check-constitution
         run: |
           # Verificar se o arquivo constitution.md foi gerado
@@ -88,31 +90,32 @@ jobs:
       ISSUE_REPOSITORY: ${{ github.repository }}
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - name: Checkout do código
+        uses: actions/checkout@v5
 
-      - name: Get response templates
-        uses: actions/checkout@v4
+      - name: Obter templates de resposta
+        uses: actions/checkout@v5
         with:
           repository: skills/exercise-toolkit
           path: exercise-toolkit
-          ref: v0.7.0
+          ref: v0.8.1
 
-      - name: Create comment - add step content
+      - name: Encontrar último comentário
+        id: find-last-comment
+        uses: peter-evans/find-comment@v3
+        with:
+          repository: ${{ env.ISSUE_REPOSITORY }}
+          issue-number: ${{ env.ISSUE_NUMBER }}
+          direction: last
+
+      - name: Atualizar comentário - verificando trabalho
         uses: GrantBirki/comment@v2.1.1
         with:
           repository: ${{ env.ISSUE_REPOSITORY }}
           issue-number: ${{ env.ISSUE_NUMBER }}
-          file: ${{ env.STEP_FILE }}
-          vars: |
-            full_repo_name: ${{ github.repository }}
-
-      - name: Create comment - watching for progress
-        uses: GrantBirki/comment@v2.1.1
-        with:
-          repository: ${{ env.ISSUE_REPOSITORY }}
-          issue-number: ${{ env.ISSUE_NUMBER }}
-          file: .github/translations/watching-for-progress.md
+          comment-id: ${{ steps.find-last-comment.outputs.comment-id }}
+          file: exercise-toolkit/markdown-templates/step-feedback/checking-work.md
+          edit-mode: replace
 
       - name: Habilitar workflow do próximo passo
         run: |
