@@ -2,26 +2,30 @@ name: Step 1
 
 on:
   workflow_dispatch:
-  push:
-    paths:
-      - ".github/steps/1-step.md"
-  # Common event triggers: pull_request, push, issues, issue_comment (feel free to experiment)
-  # Docs: https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows
+  issues:
+    types:
+      - opened
 
 permissions:
-  contents: read
+  contents: write
   actions: write
+  issues: write
 
 env:
-  STEP_2_FILE: ".github/steps/2-step.md"
+  STEP_FILE: ".github/steps/2-step.md"
   SPECIFY_INIT_SUCCESS: "false"
 
 jobs:
-  validate_step_1:
+
+  find_exercise:
+    name: Encontrar Issue do Exercício
+    uses: skills/exercise-toolkit/.github/workflows/find-exercise-issue.yml@v0.8.1
+
+  validate_step:
     name: Validate Step 1 Completion
     runs-on: ubuntu-latest
     outputs:
-      issue-number: ${{ github.event.issue.number }}
+      issue-number: ${{ needs.find_exercise.outputs.issue-number }}
 
     steps:
       - name: Checkout
@@ -69,9 +73,9 @@ jobs:
   post_next_step_content:
     name: Postar conteúdo do próximo passo
     runs-on: ubuntu-latest
-    needs: [validate_step_1]
+    needs: [validate_step]
     env:
-      ISSUE_NUMBER: ${{ needs.validate_step_1.outputs.issue-number }}
+      ISSUE_NUMBER: ${{ needs.find_exercise.outputs.issue-number }}
       ISSUE_REPOSITORY: ${{ github.repository }}
 
     steps:
@@ -90,7 +94,7 @@ jobs:
         with:
           repository: ${{ env.ISSUE_REPOSITORY }}
           issue-number: ${{ env.ISSUE_NUMBER }}
-          file: ${{ env.STEP_2_FILE }}
+          file: ${{ env.STEP_FILE }}
           vars: |
             full_repo_name: ${{ github.repository }}
 

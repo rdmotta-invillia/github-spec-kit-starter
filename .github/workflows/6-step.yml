@@ -10,11 +10,17 @@ on:
       - "Program.cs"
 
 permissions:
-  contents: read
+  contents: write
   actions: write
+  issues: write
 
 jobs:
-  validate_step_6:
+  find_exercise:
+    name: Encontrar Issue do Exercício
+    uses: skills/exercise-toolkit/.github/workflows/find-exercise-issue.yml@v0.8.1
+
+
+  validate_step:
     name: Validate Step 6 Completion
     runs-on: ubuntu-latest
 
@@ -49,7 +55,7 @@ jobs:
   post_step_completion:
     name: Post Step 6 Completion
     runs-on: ubuntu-latest
-    needs: [validate_step_6]
+    needs: [validate_step]
 
     steps:
       - name: Checkout
@@ -74,3 +80,49 @@ jobs:
           gh workflow disable "${{github.workflow}}"
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  post_review_content:
+    name: Publicar conteúdo da revisão
+    needs: [find_exercise, post_step_completion]
+    runs-on: ubuntu-latest
+    env:
+      ISSUE_REPOSITORY: ${{ github.repository }}
+      ISSUE_NUMBER: ${{ needs.find_exercise.outputs.issue-number }}
+
+    steps:
+      - name: Checkout do código
+        uses: actions/checkout@v5
+
+      - name: Obter templates de resposta
+        uses: actions/checkout@v5
+        with:
+          repository: skills/exercise-toolkit
+          path: exercise-toolkit
+          ref: v0.8.1
+
+      - name: Criar comentário - passo concluído - revisão final a seguir
+        uses: GrantBirki/comment@v2.1.1
+        with:
+          repository: ${{ env.ISSUE_REPOSITORY }}
+          issue-number: ${{ env.ISSUE_NUMBER }}
+          file: exercise-toolkit/markdown-templates/step-feedback/lesson-review.md
+
+      - name: Criar comentário - adicionar conteúdo da revisão
+        uses: GrantBirki/comment@v2.1.1
+        with:
+          repository: ${{ env.ISSUE_REPOSITORY }}
+          issue-number: ${{ env.ISSUE_NUMBER }}
+          file: ${{ env.REVIEW_FILE }}
+
+      - name: Desabilitar workflow atual
+        run: gh workflow disable "${{github.workflow}}"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  finish_exercise:
+    name: Finalizar Exercício
+    needs: [find_exercise, post_review_content]
+    uses: skills/exercise-toolkit/.github/workflows/finish-exercise.yml@v0.8.1
+    with:
+      issue-url: ${{ needs.find_exercise.outputs.issue-url }}
+      exercise-title: "Crie aplicações com o Copilot CLI"
