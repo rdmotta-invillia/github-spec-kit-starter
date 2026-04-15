@@ -74,7 +74,7 @@ code . --profile devcontainer
 
 ### Dockerfile
 
-- **Base Image**: `ghcr.io/devcontainers/images/dotnet:8.0`
+- **Base Image**: `mcr.microsoft.com/devcontainers/dotnet:8.0-bookworm`
 - **Ferramentas**: .NET SDK 8.0, Python 3.11, Node.js e Git
 - **Pacotes**: uv, Specify CLI, build-essential e utilitários essenciais
 
@@ -289,9 +289,9 @@ O Dockerfile usa Ubuntu 22.04 que é compatível com ARM64. Se encontrar problem
 
 ```dockerfile
 # Em .devcontainer/Dockerfile, altere
-FROM ghcr.io/devcontainers/images/dotnet:8.0
+FROM mcr.microsoft.com/devcontainers/dotnet:8.0-bookworm
 # para:
-FROM --platform=linux/amd64 ghcr.io/devcontainers/images/dotnet:8.0
+FROM --platform=linux/amd64 mcr.microsoft.com/devcontainers/dotnet:8.0-bookworm
 ```
 
 ### Melhorar Velocidade de Build
