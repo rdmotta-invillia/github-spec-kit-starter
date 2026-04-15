@@ -10,8 +10,7 @@
 
   // Configurações de inicialização
   "remoteUser": "vscode",
-  "workspaceFolder": "/workspace",
-  "workspaceMount": "source=${localWorkspaceFolder},target=/workspace,type=bind",
+  "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
 
   // Portas para expor (backend API + frontend Blazor)
   "forwardPorts": [5000, 5001, 7000, 7001],
@@ -34,42 +33,6 @@
     }
   },
 
-  // Extensões do VS Code para instalar automaticamente
-  "extensions": [
-    // C# e .NET
-    "ms-dotnettools.csharp",
-    "ms-dotnettools.vscode-dotnet-runtime",
-    "ms-dotnettools.blazorwasm-companion",
-    
-    // GitHub Copilot
-    "github.copilot",
-    "github.copilot-chat",
-    
-    // Git e GitHub
-    "eamodio.gitlens",
-    "github.vscode-pull-request-github",
-    
-    // Desenvolvimento
-    "ms-vscode.makefile-tools",
-    "ms-vscode.powershell",
-    "humao.rest-client",
-    
-    // Frontend/Web
-    "esbenp.prettier-vscode",
-    "dbaeumer.vscode-eslint",
-    
-    // Markdown
-    "yzhang.markdown-all-in-one",
-    "DavidAnson.vscode-markdownlint",
-    
-    // Docker
-    "ms-azuretools.vscode-docker",
-    
-    // Themes e UI
-    "github.github-vscode-theme",
-    "ms-vscode.theme-materialkind"
-  ],
-
   // Variáveis de ambiente
   "remoteEnv": {
     "DOTNET_USE_POLLING_FILE_WATCHER": "true",
@@ -86,7 +49,6 @@
         "editor.rulers": [80, 120],
         
         // .NET e C#
-        "dotnet.defaultSolutionOrFolder": ".",
         "omnisharp.enableRoslynAnalyzers": true,
         "omnisharp.organize Imports On Format": true,
         
@@ -119,19 +81,34 @@
       },
       "extensions": [
         "ms-dotnettools.csharp",
+        "ms-dotnettools.vscode-dotnet-runtime",
+        "ms-dotnettools.blazorwasm-companion",
         "github.copilot",
-        "eamodio.gitlens"
+        "github.copilot-chat",
+        "eamodio.gitlens",
+        "github.vscode-pull-request-github",
+        "ms-vscode.makefile-tools",
+        "ms-vscode.powershell",
+        "humao.rest-client",
+        "esbenp.prettier-vscode",
+        "dbaeumer.vscode-eslint",
+        "yzhang.markdown-all-in-one",
+        "DavidAnson.vscode-markdownlint",
+        "ms-azuretools.vscode-docker",
+        "github.github-vscode-theme",
+        "ms-vscode.theme-materialkind"
+      ]
+    },
+    "codespaces": {
+      "openFiles": [
+        "README.md",
+        ".devcontainer/README.md"
       ]
     }
   },
 
-  // Montar o Docker socket para executar containers
-  "mounts": [
-    "source=/var/run/docker.sock,target=/var/run/docker.sock,type=bind"
-  ],
-
   // Scripts executados após a criação do container
-  "postCreateCommand": "bash .devcontainer/post-create.sh",
+  "postCreateCommand": "bash ${containerWorkspaceFolder}/.devcontainer/post-create.sh",
 
   // Timeout para construção do container (em segundos)
   "buildArgs": {
@@ -139,7 +116,7 @@
   },
 
   // Mensagem de boas-vindas
-  "postStartCommand": "clear && cat .devcontainer/WELCOME.txt || echo '✅ Dev container iniciado com sucesso!'",
+  "postStartCommand": "clear && cat ${containerWorkspaceFolder}/.devcontainer/WELCOME.txt || echo '✅ Dev container iniciado com sucesso!'",
 
   // Configurações de segurança
   "capAdd": ["SYS_PTRACE"],

@@ -25,6 +25,31 @@ Neste exercicio você vai realizar:
 5. Gerar as tarefas de implementação no arquivo tasks.md através do arquivo plan.md
 6. Implementar a primeira versão do MVP do aplicativo usando o plano de execução e as tarefas
 
+## Usando no Codespaces
+
+O repositório agora está configurado para abrir diretamente no diretório padrão do Codespaces e provisionar automaticamente as dependências principais do exercício:
+
+- .NET SDK 8
+- Python 3.11
+- uv
+- Specify CLI
+- Node.js e npm
+
+Ao criar o Codespace, o script de pós-criação também:
+
+- cria a pasta `StakeholderDocuments` quando necessário
+- copia os documentos base de `docs/`
+- inicializa o GitHub Spec Kit com `--force` quando o projeto ainda não possui `.specify/`
+
+Se quiser validar manualmente o ambiente depois da criação, rode:
+
+```bash
+dotnet --version
+python3 --version
+uv --version
+specify version
+```
+
 
 ### Como iniciar o exercício?
 

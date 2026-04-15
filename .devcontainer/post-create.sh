@@ -3,7 +3,13 @@
 # Script de inicialização do Dev Container
 # Executa configurações necessárias após a criação do container
 
-set -e
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+WORKSPACE_DIR="$(cd "${SCRIPT_DIR}/.." && pwd)"
+SPECIFY_VERSION="${SPECIFY_VERSION:-v0.7.0}"
+
+cd "${WORKSPACE_DIR}"
 
 echo "🚀 Iniciando configuração do Dev Container..."
 echo ""
@@ -24,14 +30,28 @@ print_section() {
 
 # Função para verificar ferramentas
 check_tool() {
-    if command -v $1 &> /dev/null; then
-        version=$($1 --version 2>&1 | head -n 1)
-        echo -e "${GREEN}✓${NC} $2 instalado: $version"
+    local command_name="$1"
+    local label="$2"
+
+    if command -v "$command_name" &> /dev/null; then
+        version=$($command_name --version 2>&1 | head -n 1)
+        echo -e "${GREEN}✓${NC} ${label} instalado: $version"
         return 0
     else
-        echo -e "${RED}✗${NC} $2 não encontrado!"
+        echo -e "${RED}✗${NC} ${label} não encontrado!"
         return 1
     fi
+}
+
+install_specify_cli() {
+    if command -v specify &> /dev/null; then
+        export PATH="$HOME/.local/bin:$PATH"
+        return 0
+    fi
+
+    echo -e "${YELLOW}⚠${NC} Specify CLI não encontrado, instalando com uv..."
+    export PATH="$HOME/.local/bin:$PATH"
+    uv tool install --force --python python3.11 specify-cli --from "git+https://github.com/github/spec-kit.git@${SPECIFY_VERSION}"
 }
 
 # Validar ferramentas instaladas
@@ -46,12 +66,14 @@ check_tool "uv" "uv (Package Manager)"
 
 # Verificar Specify CLI
 print_section "Verificando Specify CLI"
-if npm list -g @github-spec-kit/specify-cli &> /dev/null; then
-    version=$(npm list -g @github-spec-kit/specify-cli | grep specify-cli | head -1)
+install_specify_cli
+
+if command -v specify &> /dev/null; then
+    version=$(specify version 2>/dev/null | head -n 1)
     echo -e "${GREEN}✓${NC} Specify CLI instalado"
+    echo "   ${version}"
 else
-    echo -e "${YELLOW}⚠${NC} Specify CLI não encontrado, instalando..."
-    npm install -g @github-spec-kit/specify-cli
+    echo -e "${RED}✗${NC} Não foi possível instalar o Specify CLI"
 fi
 
 # Verificar/Criar estrutura do projeto
@@ -84,8 +106,12 @@ print_section "Inicializando GitHub Spec Kit"
 
 if [ ! -d ".specify" ]; then
     echo -e "${YELLOW}→${NC} Inicializando GitHub Spec Kit..."
-    specify init --here --ai copilot --script sh
-    echo -e "${GREEN}✓${NC} GitHub Spec Kit inicializado com sucesso"
+    if specify init --here --force --ai copilot --script sh; then
+        echo -e "${GREEN}✓${NC} GitHub Spec Kit inicializado com sucesso"
+    else
+        echo -e "${YELLOW}⚠${NC} Falha ao inicializar o GitHub Spec Kit automaticamente"
+        echo -e "${YELLOW}→${NC} Execute manualmente: specify init --here --force --ai copilot --script sh"
+    fi
 else
     echo -e "${GREEN}✓${NC} GitHub Spec Kit já está inicializado"
 fi
@@ -96,12 +122,14 @@ print_section "Preparando projetos .NET"
 # Listar soluções .NET
 SOLUTION_COUNT=$(find . -name "*.sln" -not -path "./.git/*" | wc -l)
 
-if [ $SOLUTION_COUNT -gt 0 ]; then
+if [ "$SOLUTION_COUNT" -gt 0 ]; then
     echo -e "${YELLOW}→${NC} Encontrado(s) $SOLUTION_COUNT solução(ões) .NET"
     
     # Restaurar dependências
     echo -e "${YELLOW}→${NC} Restaurando dependências NuGet..."
-    dotnet restore
+    while IFS= read -r solution_file; do
+        dotnet restore "$solution_file"
+    done < <(find . -name "*.sln" -not -path "./.git/*")
     
     echo -e "${GREEN}✓${NC} Dependências restauradas"
 else
@@ -160,7 +188,6 @@ obj/
 .vscode/
 
 # Dev Container
-.devcontainer/
 
 # Node modules
 node_modules/
@@ -230,9 +257,15 @@ print_section "✨ Configuração concluída!"
 echo -e "${GREEN}Dev Container pronto para uso!${NC}"
 echo ""
 echo "📋 Próximos passos:"
-echo "  1. Abra VS Code: code ."
-echo "  2. Instale a extensão 'Dev Containers' (ms-vscode-remote.remote-containers)"
-echo "  3. Abra a pasta em um Dev Container: Ctrl+Shift+P > 'Dev Containers: Open Folder in Container'"
+if [ -n "${CODESPACES:-}" ]; then
+    echo "  1. Confirme se o workspace abriu em ${WORKSPACE_DIR}"
+    echo "  2. Verifique as ferramentas com: dotnet --version && specify version && uv --version"
+    echo "  3. Continue o exercício a partir do README do repositório"
+else
+    echo "  1. Abra VS Code: code ."
+    echo "  2. Instale a extensão 'Dev Containers' (ms-vscode-remote.remote-containers)"
+    echo "  3. Abra a pasta em um Dev Container: Ctrl+Shift+P > 'Dev Containers: Open Folder in Container'"
+fi
 echo ""
 echo "🛠️ Ferramentas disponíveis:"
 echo "  • .NET SDK 8.0+"

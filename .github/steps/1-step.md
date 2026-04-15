@@ -4,6 +4,19 @@ O Specify CLI é usado para inicializar o GitHub Spec Kit em uma pasta de projet
 
 Nesta tarefa, caso esteja trabalhando localmente, crie uma pasta no seu computador para o projeto e depois inicialize o GitHub Spec Kit no diretório do projeto.
 
+> [!NOTE]
+> Caso deseje trabalhar usando o GitHub Codespaces, você pode pular os passos de criação de pasta e navegação no terminal, e simplesmente abrir um Codespace para este repositório. O GitHub Spec Kit será inicializado diretamente na raiz do repositório, onde os arquivos de configuração, modelos, scripts e agentes serão criados.
+
+[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/{{full_repo_name}}?quickstart=1)
+- O plano gratuito de Codespaces que vem com todas as contas GitHub é suficiente, assumindo que você ainda tem minutos disponíveis.
+- As configurações do Codespace já estão configuradas e são suficientes.
+
+O comando abaixo é usado para inicializar o GitHub Spec Kit 
+```bash
+ specify init --here --ai copilot --script ps
+```
+
+
 > [!IMPORTANT]
 > Os passos abaixo são usados apenas para configuração local.
 
@@ -16,7 +29,6 @@ Acesse o diretório recém criado para o projeto:
 ```bash
  cd TrainingProjects\RSSFeedReader
 ``` 
-
 O comando abaixo é usado para inicializar o GitHub Spec Kit 
 ```bash
  specify init --here --ai copilot --script ps

@@ -2,6 +2,9 @@
 # Base image com suporte a .NET
 FROM mcr.microsoft.com/devcontainers/dotnet:8.0-ubuntu-22.04
 
+ARG SPECIFY_VERSION=v0.7.0
+ENV UV_LINK_MODE=copy
+
 # Atualizar pacotes
 RUN apt-get update && apt-get upgrade -y \
     && apt-get install -y --no-install-recommends \
@@ -24,8 +27,6 @@ RUN apt-get update && apt-get upgrade -y \
     # Editor
     nano \
     vim \
-    # Docker CLI (para executar containers dentro do dev container)
-    docker.io \
     # Caso necessite SSL/TLS
     ca-certificates \
     && apt-get clean \
@@ -35,24 +36,21 @@ RUN apt-get update && apt-get upgrade -y \
 RUN git --version
 
 # Instalar uv (gerenciador de pacotes Python)
-RUN pip3 install uv
+RUN pip3 install --no-cache-dir uv
 
-# Instalar Specify CLI globalmente
-RUN npm install -g @github-spec-kit/specify-cli
+# Instalar Specify CLI via uv usando uma release estável do Spec Kit
+RUN uv tool install --python python3.11 specify-cli --from git+https://github.com/github/spec-kit.git@${SPECIFY_VERSION} \
+    && ln -sf /root/.local/bin/specify /usr/local/bin/specify
 
 # Verificar instalações
-RUN dotnet --version && python3 --version && node --version && npm --version
+RUN dotnet --version && python3 --version && node --version && npm --version && specify version
 
 # Configurar Python 3.11 como padrão
 RUN update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.11 1 \
     && update-alternatives --install /usr/bin/python python /usr/bin/python3.11 1
 
-# Criar usuário vscode (já existe na imagem base)
-# Apenas garantir que o usuário possua permissões adequadas
-RUN usermod -aG docker vscode || true
-
 # Definir diretório de trabalho
-WORKDIR /workspace
+WORKDIR /workspaces
 
 # Comando padrão
 CMD ["/bin/bash"]

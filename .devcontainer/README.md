@@ -13,6 +13,13 @@ Um Dev Container encapsula todo o ambiente de desenvolvimento em um container Do
 
 ## 🚀 Início Rápido
 
+### Opção A: GitHub Codespaces
+
+1. Abra o repositório no Codespaces.
+2. Aguarde a criação do ambiente.
+3. O workspace será aberto automaticamente na pasta padrão do repositório em `/workspaces/<repositorio>`.
+4. Valide o ambiente com `dotnet --version`, `uv --version` e `specify version`.
+
 ### Pré-requisitos
 
 1. **Docker Desktop** instalado ([download](https://www.docker.com/products/docker-desktop))
@@ -68,7 +75,7 @@ code . --profile devcontainer
 ### Dockerfile
 
 - **Base Image**: `mcr.microsoft.com/devcontainers/dotnet:8.0-ubuntu-22.04`
-- **Ferramentas**: .NET SDK 8.0, Python 3.11, Node.js, Git, Docker CLI
+- **Ferramentas**: .NET SDK 8.0, Python 3.11, Node.js e Git
 - **Pacotes**: uv, Specify CLI, build-essential e utilitários essenciais
 
 ### devcontainer.json
@@ -104,6 +111,8 @@ Script executado automaticamente que:
 6. ✓ Configura Git (email/nome)
 7. ✓ Atualiza .gitignore com padrões .NET
 
+No Codespaces, o script também garante que a inicialização rode a partir da pasta correta do repositório e usa `specify init --here --force --ai copilot --script sh` para evitar prompts interativos durante o bootstrap.
+
 ## 🎯 Fluxo de Trabalho Típico
 
 ### 1. Primeira Vez - Inicializar o Projeto
@@ -113,7 +122,7 @@ Script executado automaticamente que:
 
 # O GitHub Spec Kit já deve estar inicializado pelo post-create.sh
 # Se não estiver:
-specify init --here --ai copilot --script sh
+specify init --here --force --ai copilot --script sh
 
 # Gerar documentação com Spec Kit
 /speckit.constitution
@@ -180,7 +189,7 @@ docker-compose down
 
 ### Adicionar Extensões VS Code
 
-Edite `.devcontainer/devcontainer.json` e adicione à lista `extensions`:
+Edite `.devcontainer/devcontainer.json` e adicione à lista `customizations.vscode.extensions`:
 
 ```json
 "extensions": [
@@ -225,7 +234,7 @@ Edite `devcontainer.json` e altere as portas em `forwardPorts`:
 ### Specify CLI não encontrado
 
 ```bash
-npm install -g @github-spec-kit/specify-cli
+uv tool install --force --python python3.11 specify-cli --from git+https://github.com/github/spec-kit.git@v0.7.0
 ```
 
 ### Git não configura autor
@@ -254,7 +263,7 @@ Se encontrar problemas de permissão com arquivos:
 
 ```bash
 # Dentro do container
-sudo chown -R vscode:vscode /workspace
+sudo chown -R vscode:vscode "$PWD"
 ```
 
 ## 📚 Recursos Úteis

@@ -20,7 +20,6 @@ de Leitor RSS usando a metodologia Spec-Driven Development com GitHub Spec Kit.
   ✓ Node.js + npm           - Ferramentas de build
   ✓ Specify CLI             - GitHub Spec Kit
   ✓ Git 2.48+               - Controle de versão
-  ✓ Docker CLI              - Suporte a containers
   ✓ uv                      - Gerenciador de pacotes Python
 
 ═══════════════════════════════════════════════════════════════════════════════════
@@ -28,7 +27,7 @@ de Leitor RSS usando a metodologia Spec-Driven Development com GitHub Spec Kit.
 🎯 PRÓXIMOS PASSOS:
 
 1. INICIALIZAR GITHUB SPEC KIT (primeira vez apenas):
-   $ specify init --here --ai copilot --script sh
+  $ specify init --here --force --ai copilot --script sh
 
 2. GERAR DOCUMENTAÇÃO COM SPEC KIT:
    $ /speckit.constitution
@@ -88,7 +87,7 @@ de Leitor RSS usando a metodologia Spec-Driven Development com GitHub Spec Kit.
 🆘 TROUBLESHOOTING:
 
   ❓ "Specify CLI not found"
-    → npm install -g @github-spec-kit/specify-cli
+    → uv tool install --force --python python3.11 specify-cli --from git+https://github.com/github/spec-kit.git@v0.7.0
 
   ❓ ".NET command not found"
     → Verifique se o container foi reconstruído: Ctrl+Shift+P > Rebuild Container
@@ -106,12 +105,12 @@ de Leitor RSS usando a metodologia Spec-Driven Development com GitHub Spec Kit.
   • Use "dotnet watch run" para hot reload durante desenvolvimento
   • GitHub Copilot Chat está disponível via Copilot Chat extension
   • Todos os ports estão automaticamente forwarded para sua máquina local
-  • O Dev Container monta seu workspace local, mudanças são sincronizadas
+  • No Codespaces, o repositório abre diretamente em /workspaces/<repositorio>
 
 ═══════════════════════════════════════════════════════════════════════════════════
 
-Pronto para começar? Execute: code . (na sua máquina local)
-Depois: Ctrl+Shift+P > App "Dev Containers: Reopen in Container"
+Pronto para começar? Confirme o ambiente com: dotnet --version && specify version && uv --version
+Depois siga o README do repositório para iniciar o exercício
 
 ✨ Happy Coding! ✨
 
