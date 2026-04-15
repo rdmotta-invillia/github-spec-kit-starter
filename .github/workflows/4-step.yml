@@ -6,9 +6,7 @@ on:
     branches:
       - main
     paths:
-      - ".github/steps/4-step.md"
       - ".specific/memory/plan.md"
-      - "plan.md"
 
 permissions:
   contents: write
@@ -20,6 +18,7 @@ env:
 
 jobs:
   find_exercise:
+    if: github.actor != 'github-actions[bot]'
     name: Encontrar Issue do Exercício
     uses: skills/exercise-toolkit/.github/workflows/find-exercise-issue.yml@v0.8.1
 
@@ -108,5 +107,10 @@ jobs:
       - name: Habilitar workflow do próximo passo
         run: |
           gh workflow enable "Step 5"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Desabilitar workflow atual
+        run: gh workflow disable "${{ github.workflow }}"
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
