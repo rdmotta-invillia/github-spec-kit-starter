@@ -4,7 +4,7 @@
   
   // Imagem base com .NET 8.0 — Python 3.11 e Node.js provisionados via devcontainer features
   // (evita Docker build customizado que pode falhar no Codespaces)
-  "image": "mcr.microsoft.com/devcontainers/dotnet:8.0-ubuntu-22.04",
+  "image": "ghcr.io/devcontainers/images/dotnet:8.0",
   "features": {
     "ghcr.io/devcontainers/features/python:1": {
       "version": "3.11",

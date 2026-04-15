@@ -1,6 +1,6 @@
 # Dockerfile para uso com docker-compose local.
 # O devcontainer.json usa image + features — NÃO referencia este arquivo.
-FROM mcr.microsoft.com/devcontainers/dotnet:8.0-ubuntu-22.04
+FROM ghcr.io/devcontainers/images/dotnet:8.0
 
 # Atualizar pacotes e instalar dependências base
 RUN apt-get update && apt-get upgrade -y \

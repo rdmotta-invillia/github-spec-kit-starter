@@ -74,7 +74,7 @@ code . --profile devcontainer
 
 ### Dockerfile
 
-- **Base Image**: `mcr.microsoft.com/devcontainers/dotnet:8.0-ubuntu-22.04`
+- **Base Image**: `ghcr.io/devcontainers/images/dotnet:8.0`
 - **Ferramentas**: .NET SDK 8.0, Python 3.11, Node.js e Git
 - **Pacotes**: uv, Specify CLI, build-essential e utilitários essenciais
 
@@ -289,20 +289,16 @@ O Dockerfile usa Ubuntu 22.04 que é compatível com ARM64. Se encontrar problem
 
 ```dockerfile
 # Em .devcontainer/Dockerfile, altere
-FROM mcr.microsoft.com/devcontainers/dotnet:8.0-ubuntu-22.04
+FROM ghcr.io/devcontainers/images/dotnet:8.0
 # para:
-FROM --platform=linux/amd64 mcr.microsoft.com/devcontainers/dotnet:8.0-ubuntu-22.04
+FROM --platform=linux/amd64 ghcr.io/devcontainers/images/dotnet:8.0
 ```
 
 ### Melhorar Velocidade de Build
 
-Edite `devcontainer.json`:
+O `devcontainer.json` atual usa `image + features` (sem build customizado), então não há `buildArgs` para ajustar no Codespaces. Para Docker Compose local, prefira manter cache Docker habilitado no host.
 
-```json
-"buildArgs": {
-  "VARIANT": "8.0-ubuntu-22.04"
-}
-```
+
 
 ## ✅ Verificação de Ambiente
 
