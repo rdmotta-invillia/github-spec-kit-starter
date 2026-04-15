@@ -30,7 +30,7 @@ Neste exercicio você vai realizar:
 
 Simplesmente copie o exercício para sua conta, depois dê ao seu Octocat favorito (Mona) **cerca de 20 segundos** para preparar a primeira lição, e então **atualize a página**.
 
-[![](https://img.shields.io/badge/Copy%20Exercise-%E2%86%92-1f883d?style=for-the-badge&logo=github&labelColor=197935)](https://github.com/new?template_owner=skills&template_name=exercise-template&owner=%40me&name=skills-<replace-me>&description=Exercise:Construindo+uma+aplicação+usando+GitHub+Spec+Kit&visibility=public)
+[![](https://img.shields.io/badge/Copiar%20Exerc%C3%ADcio-%E2%86%92-1f883d?style=for-the-badge&logo=github&labelColor=197935)](https://github.com/new?template_owner=rdmotta-invillia&template_name=egithub-spec-kit-starter&owner=%40me&name=skills-<replace-me>&description=Workshop+Invillia:Construindo+uma+aplicação+usando+GitHub+Spec+Kit&visibility=public)
 
 <details>
 <summary>Está com problemas? 🤷</summary><br/>
