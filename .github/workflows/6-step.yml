@@ -58,45 +58,9 @@ jobs:
             echo "⚠️ Nenhum arquivo de implementacao detectado ainda"
           fi
 
-  post_step_completion:
-    name: Post Step 6 Completion
-    runs-on: ubuntu-latest
-    needs: [find_exercise, validate_step]
-    env:
-      ISSUE_REPOSITORY: ${{ github.repository }}
-      ISSUE_NUMBER: ${{ needs.find_exercise.outputs.issue-number }}
-
-    steps:
-      - name: Checkout do código
-        uses: actions/checkout@v5
-
-      - name: Obter templates de resposta
-        uses: actions/checkout@v5
-        with:
-          repository: skills/exercise-toolkit
-          path: exercise-toolkit
-          ref: v0.8.1
-
-      - name: Encontrar último comentário
-        id: find-last-comment
-        uses: peter-evans/find-comment@v3
-        with:
-          repository: ${{ env.ISSUE_REPOSITORY }}
-          issue-number: ${{ env.ISSUE_NUMBER }}
-          direction: last
-
-      - name: Atualizar comentário - verificando trabalho
-        uses: GrantBirki/comment@v2.1.1
-        with:
-          repository: ${{ env.ISSUE_REPOSITORY }}
-          issue-number: ${{ env.ISSUE_NUMBER }}
-          comment-id: ${{ steps.find-last-comment.outputs.comment-id }}
-          file: exercise-toolkit/markdown-templates/step-feedback/checking-work.md
-          edit-mode: replace
-
   post_review_content:
     name: Publicar conteúdo da revisão
-    needs: [find_exercise, validate_step, post_step_completion]
+    needs: [find_exercise, validate_step]
     runs-on: ubuntu-latest
     env:
       ISSUE_REPOSITORY: ${{ github.repository }}
