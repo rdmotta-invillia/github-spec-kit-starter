@@ -22,7 +22,7 @@ jobs:
     uses: skills/exercise-toolkit/.github/workflows/start-exercise.yml@v0.7.3
     with:
       exercise-title: "GitHub Spec Kit desenvolvimento orientado por especificações."
-      intro-message: "Aprenda a trabalhar com SSD com GitHub Copilot."
+      intro-message: "Aprenda a trabalhar com SDD com GitHub Copilot."
 
   post_next_step_content:
     name: Postar conteúdo do próximo passo
