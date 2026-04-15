@@ -11,6 +11,9 @@ SPECIFY_VERSION="${SPECIFY_VERSION:-v0.7.0}"
 
 cd "${WORKSPACE_DIR}"
 
+# Garantir ~/.local/bin no PATH (necessário para uv e tools instalados pelo usuário)
+export PATH="$HOME/.local/bin:$PATH"
+
 echo "🚀 Iniciando configuração do Dev Container..."
 echo ""
 
@@ -43,26 +46,46 @@ check_tool() {
     fi
 }
 
+install_uv() {
+    if command -v uv &> /dev/null; then
+        return 0
+    fi
+    echo -e "${YELLOW}→${NC} Instalando uv (gerenciador de pacotes Python)..."
+    python3 -m pip install --user --quiet uv 2>/dev/null \
+        || pip3 install --user --quiet uv 2>/dev/null \
+        || { echo -e "${RED}✗${NC} Não foi possível instalar uv"; return 1; }
+    hash -r 2>/dev/null || true
+}
+
 install_specify_cli() {
+    install_uv || true
+
     if command -v specify &> /dev/null; then
-        export PATH="$HOME/.local/bin:$PATH"
         return 0
     fi
 
-    echo -e "${YELLOW}⚠${NC} Specify CLI não encontrado, instalando com uv..."
-    export PATH="$HOME/.local/bin:$PATH"
-    uv tool install --force --python python3.11 specify-cli --from "git+https://github.com/github/spec-kit.git@${SPECIFY_VERSION}"
+    if ! command -v uv &> /dev/null; then
+        echo -e "${RED}✗${NC} uv não disponível — não é possível instalar Specify CLI"
+        return 1
+    fi
+
+    echo -e "${YELLOW}⚠${NC} Specify CLI não encontrado, instalando via uv..."
+    uv tool install --force specify-cli \
+        --from "git+https://github.com/github/spec-kit.git@${SPECIFY_VERSION}" 2>/dev/null \
+    || uv tool install --force specify-cli \
+        --from "git+https://github.com/github/spec-kit.git" 2>/dev/null \
+    || { echo -e "${RED}✗${NC} Falha ao instalar Specify CLI"; return 1; }
 }
 
 # Validar ferramentas instaladas
 print_section "Verificando ferramentas instaladas"
 
-check_tool "dotnet" ".NET SDK"
-check_tool "python3" "Python 3"
-check_tool "node" "Node.js"
-check_tool "npm" "npm"
-check_tool "git" "Git"
-check_tool "uv" "uv (Package Manager)"
+check_tool "dotnet" ".NET SDK" || true
+check_tool "python3" "Python 3" || true
+check_tool "node" "Node.js" || true
+check_tool "npm" "npm" || true
+check_tool "git" "Git" || true
+check_tool "uv" "uv (Package Manager)" || true
 
 # Verificar Specify CLI
 print_section "Verificando Specify CLI"
@@ -128,7 +151,7 @@ if [ "$SOLUTION_COUNT" -gt 0 ]; then
     # Restaurar dependências
     echo -e "${YELLOW}→${NC} Restaurando dependências NuGet..."
     while IFS= read -r solution_file; do
-        dotnet restore "$solution_file"
+        dotnet restore "$solution_file" || echo -e "${YELLOW}⚠${NC} Falha ao restaurar ${solution_file}"
     done < <(find . -name "*.sln" -not -path "./.git/*")
     
     echo -e "${GREEN}✓${NC} Dependências restauradas"
@@ -242,7 +265,7 @@ fi
 # Configurar Git (opcional)
 print_section "Configuração Git (opcional)"
 
-if [ -z "$(git config user.email)" ]; then
+if command -v git &> /dev/null && [ -z "$(git config user.email 2>/dev/null)" ]; then
     echo -e "${YELLOW}→${NC} Configurando Git..."
     git config user.email "dev@devcontainer.local"
     git config user.name "Dev Container"

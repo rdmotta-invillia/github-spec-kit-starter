@@ -2,10 +2,17 @@
   "name": "GitHub Spec Kit - Leitor RSS",
   "description": "Dev container para desenvolvimento de uma aplicação de Leitor RSS usando GitHub Spec Kit com ASP.NET Core e Blazor",
   
-  // Dockerfile localizado na pasta .devcontainer
-  "build": {
-    "dockerfile": "Dockerfile",
-    "context": ".."
+  // Imagem base com .NET 8.0 — Python 3.11 e Node.js provisionados via devcontainer features
+  // (evita Docker build customizado que pode falhar no Codespaces)
+  "image": "mcr.microsoft.com/devcontainers/dotnet:8.0-ubuntu-22.04",
+  "features": {
+    "ghcr.io/devcontainers/features/python:1": {
+      "version": "3.11",
+      "installTools": true
+    },
+    "ghcr.io/devcontainers/features/node:1": {
+      "version": "lts"
+    }
   },
 
   // Configurações de inicialização
@@ -109,11 +116,6 @@
 
   // Scripts executados após a criação do container
   "postCreateCommand": "bash ${containerWorkspaceFolder}/.devcontainer/post-create.sh",
-
-  // Timeout para construção do container (em segundos)
-  "buildArgs": {
-    "VARIANT": "8.0-ubuntu-22.04"
-  },
 
   // Mensagem de boas-vindas
   "postStartCommand": "clear && cat ${containerWorkspaceFolder}/.devcontainer/WELCOME.txt || echo '✅ Dev container iniciado com sucesso!'",
