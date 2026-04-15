@@ -42,11 +42,13 @@ Se você não especificar a opção `--text`, talvez seja solicitado a fornecer 
 
 Monitore a resposta do GitHub Copilot e forneça assistência conforme necessário.
 
-> [!IMPORTANT] Importante: o GitHub Copilot solicita assistência ao gerar o arquivo `spec.md`. Por exemplo, o GitHub Copilot solicita permissão para criar uma nova branch no repositório. Conceda permissão quando necessário respondendo na visualização Chat.
+> [!IMPORTANT]
+> Importante: o GitHub Copilot solicita assistência ao gerar o arquivo `spec.md`. Por exemplo, o GitHub Copilot solicita permissão para criar uma nova branch no repositório. Conceda permissão quando necessário respondendo na visualização Chat.
 
 Pode levar de 4 a 6 minutos para criar o arquivo `spec.md` e o checklist de requisitos usado para validar sua especificação. Se o processo do workflow ficar inativo por mais de 6 minutos sem reportar conclusão bem-sucedida, você pode usar o comando retry do GitHub Copilot para reiniciar o workflow.
 
-> [!TIP] Dica: Para uma melhor performance, utilize de subagentes para realizar tarefas complexas e ou extensas.
+> [!TIP] 
+> Dica: Para uma melhor performance, utilize de subagentes para realizar tarefas complexas e ou extensas.
 
 Quando o workflow do specify for concluído, use a visualização EXPLORER do Visual Studio Code para expandir as pastas specs e checklists.
 
@@ -96,5 +98,6 @@ NOTA: O comando `/speckit.clarify` pode ser usado para identificar ambiguidades,
 **Por exemplo:**
 >> Abra a visualização SOURCE CONTROL do Visual Studio Code, coloque as alterações em stage, informe uma mensagem de commit como "Adicionado especificação para o App RSS" e publique a nova branch no seu repositório Git.
 
-> [!NOTE] NOta: A especificação define o **"o quê"** sem o **"como"**. Ela não especifica linguagens de programação, frameworks, esquemas de banco de dados nem organização de código - esses detalhes de implementação são definidos nas fases de Plan e Tasks com base nas restrições técnicas da constituição. A spec foca nas necessidades do usuário e nos requisitos de negócio, facilitando a revisão com partes interessadas não técnicas.
+> [!NOTE] 
+> Nota: A especificação define o **"o quê"** sem o **"como"**. Ela não especifica linguagens de programação, frameworks, esquemas de banco de dados nem organização de código - esses detalhes de implementação são definidos nas fases de Plan e Tasks com base nas restrições técnicas da constituição. A spec foca nas necessidades do usuário e nos requisitos de negócio, facilitando a revisão com partes interessadas não técnicas.
  
