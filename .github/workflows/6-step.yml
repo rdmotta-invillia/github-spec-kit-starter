@@ -23,6 +23,7 @@ jobs:
   validate_step:
     name: Validate Step 6 Completion
     runs-on: ubuntu-latest
+    needs: [find_exercise]
 
     steps:
       - name: Checkout
@@ -55,7 +56,7 @@ jobs:
   post_step_completion:
     name: Post Step 6 Completion
     runs-on: ubuntu-latest
-    needs: [validate_step]
+    needs: [find_exercise, validate_step]
 
     steps:
       - name: Checkout
@@ -83,7 +84,7 @@ jobs:
 
   post_review_content:
     name: Publicar conteúdo da revisão
-    needs: [find_exercise, post_step_completion]
+    needs: [find_exercise, validate_step, post_step_completion]
     runs-on: ubuntu-latest
     env:
       ISSUE_REPOSITORY: ${{ github.repository }}
@@ -121,7 +122,7 @@ jobs:
 
   finish_exercise:
     name: Finalizar Exercício
-    needs: [find_exercise, post_review_content]
+    needs: [find_exercise, validate_step, post_review_content]
     uses: skills/exercise-toolkit/.github/workflows/finish-exercise.yml@v0.8.1
     with:
       issue-url: ${{ needs.find_exercise.outputs.issue-url }}

@@ -24,6 +24,7 @@ jobs:
   validate_step:
     name: Validate Step 3 Completion
     runs-on: ubuntu-latest
+    needs: [find_exercise]
 
     steps:
       - name: Checkout
@@ -59,7 +60,7 @@ jobs:
   post_next_step_content:
     name: Postar conteúdo do próximo passo
     runs-on: ubuntu-latest
-    needs: [validate_step]
+    needs: [find_exercise, validate_step]
     env:
       ISSUE_NUMBER: ${{ needs.find_exercise.outputs.issue-number }}
       ISSUE_REPOSITORY: ${{ github.repository }}
