@@ -13,7 +13,7 @@ permissions:
 
 
 env:
-  STEP_1_FILE: ".github/steps/1-step.md"
+  STEP_FILE: ".github/steps/1-step.md"
 
 jobs:
   start_exercise:
@@ -49,16 +49,9 @@ jobs:
         with:
           repository: ${{ env.ISSUE_REPOSITORY }}
           issue-number: ${{ env.ISSUE_NUMBER }}
-          file: ${{ env.STEP_1_FILE }}
+          file: ${{ env.STEP_FILE }}
           vars: |
             full_repo_name: ${{ github.repository }}
-
-      - name: Create comment - watching for progress
-        uses: GrantBirki/comment@v2.1.1
-        with:
-          repository: ${{ env.ISSUE_REPOSITORY }}
-          issue-number: ${{ env.ISSUE_NUMBER }}
-          file: .github/translations/watching-for-progress.md
 
       - name: Habilitar workflow do próximo passo
         run: |
