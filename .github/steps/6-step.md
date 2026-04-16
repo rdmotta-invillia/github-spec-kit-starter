@@ -32,11 +32,12 @@ A estratégia MVP First nem sempre se limita à primeira user story. Dependendo 
 
 Crie um comando que especifique o intervalo de tarefas necessário para implementar a versão MVP do recurso. Use o intervalo de tarefas especificado na seção Implementation Strategy do arquivo `tasks.md`, ou calcule-o com base nas tarefas listadas em cada fase.
 
-> [!IMPORTANT] IMPORTANTE: O comando inserido deve referenciar o intervalo de tarefas específico definido no seu arquivo `tasks.md`.
+> [!IMPORTANT] 
+> O comando inserido deve referenciar o intervalo de tarefas específico definido no seu arquivo `tasks.md`.
 
 Por exemplo (referenciando o exemplo de implementação MVP da etapa anterior), você pode inserir o seguinte comando:
 ```bash 
-/speckit.implement Implement the MVP First strategy (Tasks: T001 - T050)
+/speckit.implement Implementar a estratégia MVP First (Tarefas: T001 - T050)
 ```
 
 Esse comando instrui o GitHub Copilot a começar a implementar as tarefas necessárias para a estratégia MVP First do aplicativo RSS Feed Reader.
@@ -47,7 +48,8 @@ Neste exercício, você implementa todas as tarefas da estratégia MVP First usa
 
 O agente constrói o aplicativo incrementalmente, tarefa por tarefa, seguindo a ordem definida no arquivo `tasks.md`.
 
-> [!NOTE] OBSERVAÇÃO: O GitHub Copilot exibe solicitações frequentes de assistência durante a fase de implementação. O tempo necessário para concluir a implementação pode ser afetado pela rapidez com que você responde às solicitações de assistência/permissão.
+> [!NOTE] 
+> O GitHub Copilot exibe solicitações frequentes de assistência durante a fase de implementação. O tempo necessário para concluir a implementação pode ser afetado pela rapidez com que você responde às solicitações de assistência/permissão.
 
 4. Continue monitorando o fluxo de implementação até que todas as tarefas necessárias para o aplicativo MVP sejam concluídas.
 
@@ -164,7 +166,8 @@ Use o Visual Studio Code para executar o aplicativo e, em seguida, teste manualm
 
 10. Continue testando o frontend (e reportando quaisquer problemas ao GitHub Copilot) até que todos os cenários de aceitação do aplicativo MVP sejam aprovados com sucesso.
 
-> [!IMPORTANT] Observações principais: O processo de implementação pode ser iterativo e pode exigir várias rodadas de testes e depuração.
+> [!IMPORTANT] 
+> O processo de implementação pode ser iterativo e pode exigir várias rodadas de testes e depuração.
 > Uma comunicação clara com o GitHub Copilot é essencial para uma solução de problemas eficaz.
 > Testes abrangentes garantem que o aplicativo MVP atenda aos requisitos especificados e funcione conforme o esperado.
 
