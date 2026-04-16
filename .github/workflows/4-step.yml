@@ -6,7 +6,7 @@ on:
     branches:
       - main
     paths:
-      - ".specific/memory/plan.md"
+      - "specs/**/plan.md"
 
 permissions:
   contents: write
