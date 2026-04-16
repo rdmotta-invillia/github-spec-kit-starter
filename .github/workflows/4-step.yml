@@ -39,9 +39,9 @@ jobs:
           if [ -f "plan.md" ]; then
             plan_found=true
             plan_file="plan.md"
-          elif [ -f ".specific/memory/plan.md" ]; then
+          elif [ -f "specs/**/plan.md" ]; then
             plan_found=true
-            plan_file=".specific/memory/plan.md"
+            plan_file="specs/**/plan.md"
           fi
           
           if [ "$plan_found" = true ]; then
