@@ -6,7 +6,9 @@ on:
     branches:
       - main
     paths:
-      - "src/**"
+      - "**/*.cs"
+      - "**/*.csproj"
+      - "**/*.sln"
 
 permissions:
   contents: write
